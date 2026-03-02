@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pagehead">
+  <h1>История изменений: {{ inflow.number }}</h1>
+  <a class="btn btn-secondary" href="/inflows/{{ inflow.id }}">Назад</a>
+</div>
+
+<div class="tablewrap card">
+<table class="table">
+  <thead>
+    <tr>
+      <th>Дата</th>
+      <th>Пользователь</th>
+      <th>Поле</th>
+      <th>Было</th>
+      <th>Стало</th>
+      <th>Причина</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for h in history %}
+    <tr>
+      <td class="mono">{{ h.changed_at.strftime("%Y-%m-%d %H:%M") }}</td>
+      <td>{{ h.user.full_name }}</td>
+      <td class="mono">{{ h.field }}</td>
+      <td>{{ h.old_value }}</td>
+      <td>{{ h.new_value }}</td>
+      <td>{{ h.reason }}</td>
+    </tr>
+    {% endfor %}
+    {% if history|length == 0 %}
+      <tr><td colspan="6" class="muted">История пуста</td></tr>
+    {% endif %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

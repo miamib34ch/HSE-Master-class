@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pagehead">
+  {% if mode == "create" %}
+    <h1>Новое планируемое поступление</h1>
+  {% else %}
+    <h1>Редактирование: {{ inflow.number }}</h1>
+  {% endif %}
+</div>
+
+<div class="card">
+<form method="post" action="{% if mode == 'create' %}/inflows/new{% else %}/inflows/{{ inflow.id }}/edit{% endif %}" class="form grid">
+  <label>Организация
+    <input name="organization" value="{{ inflow.organization if inflow else 'ООО Ромашка' }}" required>
+  </label>
+
+  <label>Контрагент
+    <input name="counterparty" value="{{ inflow.counterparty if inflow else '' }}" required>
+  </label>
+
+  <label>Договор
+    <input name="contract" value="{{ inflow.contract if inflow else '' }}" required>
+  </label>
+
+  <label>Основание (счет/договор/график)
+    <input name="basis" value="{{ inflow.basis if inflow else '' }}" required>
+  </label>
+
+  <label>Статья ДДС
+    <input name="article" value="{{ inflow.article if inflow else 'Выручка от продаж' }}" required>
+  </label>
+
+  <label>Канал поступления
+    <select name="channel" required>
+      {% for k, v in channels %}
+        <option value="{{ k }}" {% if inflow and inflow.channel == k %}selected{% endif %}>{{ v }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>Плановая дата (YYYY-MM-DD)
+    <input name="planned_date" type="date" value="{{ inflow.planned_date if inflow else '' }}" required>
+  </label>
+
+  <label>Сумма
+    <input name="amount" inputmode="decimal" value="{{ inflow.amount if inflow else '' }}" required>
+  </label>
+
+  <label>Валюта
+    <input name="currency" value="{{ inflow.currency if inflow else 'RUB' }}" required>
+  </label>
+
+  <label class="full">Комментарий
+    <textarea name="comment" rows="3">{{ inflow.comment if inflow else '' }}</textarea>
+  </label>
+
+  {% if mode == "edit" %}
+  <label class="full">Причина изменения (обязательно при переносе/корректировке)
+    <input name="change_reason" value="">
+  </label>
+  {% endif %}
+
+  <div class="actions full">
+    <a class="btn btn-secondary" href="{% if mode == 'create' %}/inflows{% else %}/inflows/{{ inflow.id }}{% endif %}">Отмена</a>
+    <button class="btn" type="submit">Сохранить</button>
+  </div>
+</form>
+</div>
+{% endblock %}

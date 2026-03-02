@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pagehead">
+  <h1>Настройки: черный список контрагентов</h1>
+</div>
+
+<div class="card">
+  <h2>Добавить</h2>
+  <form method="post" action="/settings/blacklist/new" class="form grid">
+    <label>Контрагент
+      <input name="counterparty" required>
+    </label>
+    <label>Причина
+      <input name="reason" value="">
+    </label>
+    <label class="row">
+      <input type="checkbox" name="active" checked>
+      <span>Активен</span>
+    </label>
+    <div class="actions full">
+      <button class="btn" type="submit">Добавить</button>
+    </div>
+  </form>
+</div>
+
+<div class="tablewrap card">
+  <h2>Список</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Контрагент</th>
+        <th>Причина</th>
+        <th>Активен</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for it in items %}
+      <tr>
+        <td>{{ it.counterparty }}</td>
+        <td>{{ it.reason }}</td>
+        <td>{{ "Да" if it.active else "Нет" }}</td>
+        <td>
+          <form method="post" action="/settings/blacklist/{{ it.id }}/toggle">
+            <button class="btn btn-secondary" type="submit">{{ "Выключить" if it.active else "Включить" }}</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+      {% if items|length == 0 %}
+        <tr><td colspan="4" class="muted">Пусто</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

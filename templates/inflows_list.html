@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pagehead">
+  <h1>Планируемые поступления</h1>
+  {% if user.role in ["initiator","treasurer","admin"] %}
+    <a class="btn" href="/inflows/new">Создать</a>
+  {% endif %}
+</div>
+
+<div class="filters card">
+  <form method="get" action="/inflows" class="row">
+    <label>Статус
+      <select name="status">
+        <option value="">Все</option>
+        {% for s in statuses %}
+          <option value="{{ s }}" {% if selected_status == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <button class="btn btn-secondary" type="submit">Фильтр</button>
+  </form>
+</div>
+
+<div class="tablewrap card">
+<table class="table">
+  <thead>
+    <tr>
+      <th>Номер</th>
+      <th>Организация</th>
+      <th>Контрагент</th>
+      <th>Статья ДДС</th>
+      <th>Дата</th>
+      <th>Сумма</th>
+      <th>Статус</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for x in inflows %}
+    <tr>
+      <td class="mono">{{ x.number }}</td>
+      <td>{{ x.organization }}</td>
+      <td>{{ x.counterparty }}</td>
+      <td>{{ x.article }}</td>
+      <td>{{ x.planned_date }}</td>
+      <td class="mono">{{ "%.2f"|format(x.amount) }} {{ x.currency }}</td>
+      <td><span class="badge">{{ x.status }}</span></td>
+      <td><a class="link" href="/inflows/{{ x.id }}">Открыть</a></td>
+    </tr>
+    {% endfor %}
+    {% if inflows|length == 0 %}
+    <tr><td colspan="8" class="muted">Нет записей</td></tr>
+    {% endif %}
+  </tbody>
+</table>
+</div>
+{% endblock %}
