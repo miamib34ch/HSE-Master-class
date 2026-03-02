@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pagehead">
+  <div>
+    <h1>{{ inflow.number }}</h1>
+    <div class="subline">
+      <span class="badge">{{ inflow.status }}</span>
+      <span class="muted">Создано: {{ inflow.created_at.strftime("%Y-%m-%d %H:%M") }}</span>
+      <span class="muted">Обновлено: {{ inflow.updated_at.strftime("%Y-%m-%d %H:%M") }}</span>
+    </div>
+  </div>
+  <div class="row">
+    <a class="btn btn-secondary" href="/inflows/{{ inflow.id }}/history">История</a>
+    {% if can_edit %}
+      <a class="btn" href="/inflows/{{ inflow.id }}/edit">Редактировать</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <div class="grid2">
+    <div><div class="k">Организация</div><div class="v">{{ inflow.organization }}</div></div>
+    <div><div class="k">Контрагент</div><div class="v">{{ inflow.counterparty }}</div></div>
+    <div><div class="k">Договор</div><div class="v">{{ inflow.contract }}</div></div>
+    <div><div class="k">Основание</div><div class="v">{{ inflow.basis }}</div></div>
+    <div><div class="k">Статья ДДС</div><div class="v">{{ inflow.article }}</div></div>
+    <div><div class="k">Канал</div><div class="v">{{ channels.get(inflow.channel, inflow.channel) }}</div></div>
+    <div><div class="k">Плановая дата</div><div class="v">{{ inflow.planned_date }}</div></div>
+    <div><div class="k">Сумма</div><div class="v mono">{{ "%.2f"|format(inflow.amount) }} {{ inflow.currency }}</div></div>
+  </div>
+
+  {% if inflow.comment %}
+    <div class="sep"></div>
+    <div class="k">Комментарий</div>
+    <div class="v">{{ inflow.comment }}</div>
+  {% endif %}
+
+  {% if last_task %}
+    <div class="sep"></div>
+    <div class="k">Последняя задача согласования</div>
+    <div class="v">
+      Статус: <b>{{ last_task.status }}</b>,
+      SLA до: <span class="mono">{{ last_task.sla_due.strftime("%Y-%m-%d %H:%M") }}</span>
+      {% if last_task.decision_comment %}
+        <div class="muted">Комментарий: {{ last_task.decision_comment }}</div>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <div class="row gap">
+    {% if user.role in ["initiator","treasurer","admin"] and inflow.status in ["Черновик","На доработке"] %}
+      <form method="post" action="/inflows/{{ inflow.id }}/submit">
+        <button class="btn" type="submit">Проверить и отправить</button>
+      </form>
+    {% endif %}
+
+    {% if user.role in ["treasurer","admin"] and inflow.status not in ["Отменено","Отклонено"] %}
+      <form method="post" action="/inflows/{{ inflow.id }}/cancel" class="row">
+        <input name="reason" placeholder="Причина отмены" required>
+        <button class="btn btn-danger" type="submit">Отменить</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

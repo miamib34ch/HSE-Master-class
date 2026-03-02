@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pagehead">
+  <h1>Настройки: лимиты согласования</h1>
+</div>
+
+<div class="card">
+  <h2>Добавить правило</h2>
+  <form method="post" action="/settings/limits/new" class="form grid">
+    <label>Организация
+      <input name="organization" value="ООО Ромашка" required>
+    </label>
+    <label>Статья ДДС
+      <input name="article" value="Выручка от продаж" required>
+    </label>
+    <label>Валюта
+      <input name="currency" value="RUB" required>
+    </label>
+    <label>Лимит (если 0 — только флаг ниже)
+      <input name="limit_amount" value="0" required>
+    </label>
+    <label class="row">
+      <input type="checkbox" name="always_requires_approval">
+      <span>Всегда требует согласования (например, займы/инвестиции)</span>
+    </label>
+    <div class="actions full">
+      <button class="btn" type="submit">Добавить</button>
+    </div>
+  </form>
+</div>
+
+<div class="tablewrap card">
+  <h2>Текущие правила</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Организация</th>
+        <th>Статья</th>
+        <th>Валюта</th>
+        <th>Лимит</th>
+        <th>Всегда согласование</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rules %}
+      <tr>
+        <td>{{ r.organization }}</td>
+        <td>{{ r.article }}</td>
+        <td class="mono">{{ r.currency }}</td>
+        <td class="mono">{{ "%.2f"|format(r.limit_amount) }}</td>
+        <td>{{ "Да" if r.always_requires_approval else "Нет" }}</td>
+        <td>
+          <form method="post" action="/settings/limits/{{ r.id }}/delete">
+            <button class="btn btn-danger" type="submit">Удалить</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+      {% if rules|length == 0 %}
+        <tr><td colspan="6" class="muted">Нет правил</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

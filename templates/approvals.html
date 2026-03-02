@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pagehead">
+  <h1>Согласования (ожидают решения)</h1>
+</div>
+
+<div class="tablewrap card">
+<table class="table">
+  <thead>
+    <tr>
+      <th>Создано</th>
+      <th>SLA</th>
+      <th>Документ</th>
+      <th>Контрагент</th>
+      <th>Сумма</th>
+      <th>Действия</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in tasks %}
+    <tr>
+      <td class="mono">{{ t.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+      <td class="mono">
+        {% if t.sla_due < now %}
+          <span class="badge danger">Просрочено</span>
+        {% else %}
+          {{ t.sla_due.strftime("%Y-%m-%d %H:%M") }}
+        {% endif %}
+      </td>
+      <td><a class="link" href="/inflows/{{ t.inflow.id }}">{{ t.inflow.number }}</a></td>
+      <td>{{ t.inflow.counterparty }}</td>
+      <td class="mono">{{ "%.2f"|format(t.inflow.amount) }} {{ t.inflow.currency }}</td>
+      <td>
+        <div class="row gap">
+          <form method="post" action="/approvals/{{ t.id }}/approve" class="row">
+            <input name="comment" placeholder="Комментарий (опционально)">
+            <button class="btn" type="submit">Утвердить</button>
+          </form>
+          <form method="post" action="/approvals/{{ t.id }}/return" class="row">
+            <input name="comment" placeholder="Причина возврата" required>
+            <button class="btn btn-secondary" type="submit">На доработку</button>
+          </form>
+          <form method="post" action="/approvals/{{ t.id }}/reject" class="row">
+            <input name="comment" placeholder="Причина отклонения" required>
+            <button class="btn btn-danger" type="submit">Отклонить</button>
+          </form>
+        </div>
+      </td>
+    </tr>
+    {% endfor %}
+    {% if tasks|length == 0 %}
+      <tr><td colspan="6" class="muted">Нет задач на согласование</td></tr>
+    {% endif %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

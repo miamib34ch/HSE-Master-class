@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Вход — Казначейство</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-title">Казначейство</div>
+    <div class="brand-sub">Планирование поступления денежных средств</div>
+  </div>
+</header>
+
+<main class="container">
+  {% if flash %}
+    <div class="flash flash-{{ flash.kind }}">{{ flash.message }}</div>
+  {% endif %}
+
+  <div class="card">
+    <h1>Вход</h1>
+    <form method="post" action="/login" class="form">
+      <label>Логин
+        <input name="username" autocomplete="username" required>
+      </label>
+      <label>Пароль
+        <input name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <button class="btn" type="submit">Войти</button>
+    </form>
+
+    <div class="hint">
+      <div><b>Тестовые пользователи:</b></div>
+      <ul>
+        <li>initiator1 / pass123 — Инициатор</li>
+        <li>treasurer1 / pass123 — Казначей</li>
+        <li>manager1 / pass123 — Руководитель/ФД</li>
+        <li>accountant1 / pass123 — Бухгалтерия</li>
+        <li>admin / admin123 — Админ</li>
+      </ul>
+    </div>
+  </div>
+</main>
+</body>
+</html>

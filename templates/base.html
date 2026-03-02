@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ title if title else "Казначейство — Планирование поступления ДС" }}</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-title">Казначейство</div>
+    <div class="brand-sub">Планирование поступления денежных средств</div>
+  </div>
+  {% if user %}
+  <div class="userbox">
+    <div class="userline">
+      <div class="username">{{ user.full_name }}</div>
+      <div class="role">({{ role_labels.get(user.role, user.role) }})</div>
+    </div>
+    <form method="post" action="/logout">
+      <button class="btn btn-secondary" type="submit">Выйти</button>
+    </form>
+  </div>
+  {% endif %}
+</header>
+
+<nav class="nav">
+  {% if user %}
+    <a class="navlink" href="/inflows">Планируемые поступления</a>
+    {% if user.role in ["manager","admin"] %}
+      <a class="navlink" href="/approvals">Согласования</a>
+    {% endif %}
+    {% if user.role in ["treasurer","manager","admin"] %}
+      <a class="navlink" href="/reports/pending">Отчет: На согласовании</a>
+    {% endif %}
+    {% if user.role in ["treasurer","admin"] %}
+      <a class="navlink" href="/settings/limits">Настройки: Лимиты</a>
+      <a class="navlink" href="/settings/blacklist">Настройки: Черный список</a>
+    {% endif %}
+  {% endif %}
+</nav>
+
+<main class="container">
+  {% if flash %}
+    <div class="flash flash-{{ flash.kind }}">{{ flash.message }}</div>
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <div>Демо-приложение для учебного задания: планирование поступлений ДС</div>
+</footer>
+</body>
+</html>

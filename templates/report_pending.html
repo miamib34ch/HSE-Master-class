@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pagehead">
+  <h1>Отчет: планируемые поступления на согласовании</h1>
+</div>
+
+<div class="tablewrap card">
+<table class="table">
+  <thead>
+    <tr>
+      <th>Номер</th>
+      <th>Организация</th>
+      <th>Контрагент</th>
+      <th>Статья ДДС</th>
+      <th>Дата</th>
+      <th>Сумма</th>
+      <th>Канал</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for x in inflows %}
+    <tr>
+      <td class="mono">{{ x.number }}</td>
+      <td>{{ x.organization }}</td>
+      <td>{{ x.counterparty }}</td>
+      <td>{{ x.article }}</td>
+      <td>{{ x.planned_date }}</td>
+      <td class="mono">{{ "%.2f"|format(x.amount) }} {{ x.currency }}</td>
+      <td>{{ channels.get(x.channel, x.channel) }}</td>
+      <td><a class="link" href="/inflows/{{ x.id }}">Открыть</a></td>
+    </tr>
+    {% endfor %}
+    {% if inflows|length == 0 %}
+      <tr><td colspan="8" class="muted">Нет записей</td></tr>
+    {% endif %}
+  </tbody>
+</table>
+</div>
+{% endblock %}
